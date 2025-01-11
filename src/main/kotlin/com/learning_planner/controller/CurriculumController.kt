@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController
 class CurriculumController(
     private val curriculumService: CurriculumService
 ) {
-
     @PostMapping("/curriculum")
     fun makeCurriculum(@RequestBody request: CurriculumCreateRequest): CurriculumResponse {
         return curriculumService.makeCurriculum(request)
