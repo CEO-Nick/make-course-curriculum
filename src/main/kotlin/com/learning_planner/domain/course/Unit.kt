@@ -1,4 +1,4 @@
-package com.learning_planner.dto.curriculum.response
+package com.learning_planner.domain.course
 
 data class Unit(
     val id: Long,
