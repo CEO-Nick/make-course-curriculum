@@ -16,6 +16,7 @@ class LearningPlanService(
     private val chatClient: ChatClient
 ) {
 
+    // <p class="mantine-Text-root mantine-1hqlk6r">
     fun makeCurriculum(request: CreateDateRangePlanRequest) {
         val findCourse = courseRepository.findByIdOrThrow(request.courseId)
 

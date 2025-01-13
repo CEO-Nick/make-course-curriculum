@@ -5,6 +5,8 @@ import com.learning_planner.domain.course.CourseRepository
 import com.learning_planner.dto.course.request.CreateCourseRequest
 import com.learning_planner.dto.course.response.CourseInfo
 import com.learning_planner.dto.curriculum.response.CurriculumResponse
+import groovy.util.logging.Slf4j
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestClientException
@@ -14,6 +16,7 @@ import java.net.URL
 
 @Service
 @Transactional
+@Slf4j
 class CourseService(
     private val courseRepository: CourseRepository
 ) {
@@ -66,10 +69,22 @@ class CourseService(
         val courseName = title?.get(1)?.trim() ?: throw IllegalStateException("강의명을 알 수 없습니다")
         val instructor = title[2].trim()
 
+
+        // 강의 개수 & 강의 전체 시간 추출
+        // TODO : 에러 발생 해결하기
+        val courseMetadata = COURSE_METADATA_PATTERN.find(courseHtml)?.groupValues ?: throw IllegalStateException("강의 개수와 강의 전체 시간을 추출할 수 없습니다")
+        val numberOfLessons = courseMetadata[1].toInt()
+        val hours = courseMetadata[2].toInt()
+        val minutes = courseMetadata[3].toInt()
+
+        log.info("강의 개수 : $numberOfLessons\t$hours 시간 $minutes 분")
+
         return CourseInfo(
             courseId = courseId,
             courseName = courseName,
             instructor = instructor,
+            lessonCount = numberOfLessons,
+            totalDuration = hours * 60 + minutes
         )
     }
 
@@ -108,11 +123,25 @@ class CourseService(
     }
 
     companion object {
+        // 강의 ID 추출을 위한 정규식 패턴
         private val ITEM_ID_PATTERN =
             """<meta property="dtr:item_id" content="(\d+)"\s*/>""".toRegex()
+
+        // 강의명 추출
         private val TITLE_PATTERN = """<title>(.*?) \| (.*?) - 인프런</title>""".toRegex()
+
+        // 강의 개수 & 강의 전체 시간 추출
+        private val COURSE_METADATA_PATTERN = """(\d+)\s*∙\s*\((\d+)시간\s*(\d+)분\)""".toRegex()
+
+        // 커리큘럼 api 앞부분
         private const val CURRICULUM_API_BASE_URL =
             "https://course-api.inflearn.com/client/api/v1/course/"
+
+        // 커리큘럼 api 뒷부분
         private const val CURRICULUM_API_SUFFIX = "/curriculum?lang=ko"
+
+        private val log = LoggerFactory.getLogger(CourseService::class.java)
+
+
     }
 }
