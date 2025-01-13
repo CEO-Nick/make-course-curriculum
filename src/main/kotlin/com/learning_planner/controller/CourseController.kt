@@ -1,7 +1,7 @@
 package com.learning_planner.controller
 
-import com.learning_planner.dto.curriculum.request.CreateCourseRequest
-import com.learning_planner.dto.curriculum.response.CourseResponse
+import com.learning_planner.dto.course.request.CreateCourseRequest
+import com.learning_planner.dto.course.response.CourseResponse
 import com.learning_planner.service.CourseService
 import org.springframework.web.bind.annotation.*
 

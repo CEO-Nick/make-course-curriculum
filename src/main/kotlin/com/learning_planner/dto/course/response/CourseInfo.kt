@@ -1,4 +1,4 @@
-package com.learning_planner.dto.curriculum.response
+package com.learning_planner.dto.course.response
 
 data class CourseInfo(
     val courseId: String,

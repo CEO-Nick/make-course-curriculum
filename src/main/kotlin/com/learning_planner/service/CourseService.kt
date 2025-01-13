@@ -2,8 +2,8 @@ package com.learning_planner.service
 
 import com.learning_planner.domain.course.Course
 import com.learning_planner.domain.course.CourseRepository
-import com.learning_planner.dto.curriculum.request.CreateCourseRequest
-import com.learning_planner.dto.curriculum.response.CourseInfo
+import com.learning_planner.dto.course.request.CreateCourseRequest
+import com.learning_planner.dto.course.response.CourseInfo
 import com.learning_planner.dto.curriculum.response.CurriculumResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

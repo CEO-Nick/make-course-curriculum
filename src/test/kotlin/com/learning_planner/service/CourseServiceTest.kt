@@ -1,7 +1,7 @@
 package com.learning_planner.service
 
 import com.learning_planner.domain.course.CourseRepository
-import com.learning_planner.dto.curriculum.request.CreateCourseRequest
+import com.learning_planner.dto.course.request.CreateCourseRequest
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
