@@ -12,14 +12,25 @@ class StudyPlanController(
     private val learningPlanService: LearningPlanService
 ) {
 
-    @PostMapping("/study-plans/date-range")
-    fun makeCurriculum(@RequestBody request: CreateDateRangePlanRequest): String? {
-        return learningPlanService.makeCurriculum(request)?.result?.output?.content
+//    @PostMapping("/study-plans/date-range")
+//    fun makeCurriculum(@RequestBody request: CreateDateRangePlanRequest): String? {
+//        return learningPlanService.makeCurriculum(request)
+//    }
+//
+//    @PostMapping("/study-plans/daily-hours")
+//    fun makeCurriculum(@RequestBody request: CreateDailyHoursPlanRequest): String? {
+//        return learningPlanService.makeCurriculum(request)
+//    }
+
+
+    @PostMapping("/study-plans/date-range/AI")
+    fun makeCurriculumWithAI(@RequestBody request: CreateDateRangePlanRequest): String? {
+        return learningPlanService.makeCurriculumWithAI(request)
     }
 
-    @PostMapping("/study-plans/daily-hours")
-    fun makeCurriculum(@RequestBody request: CreateDailyHoursPlanRequest): String? {
-        return learningPlanService.makeCurriculum(request)?.result?.output?.content
+    @PostMapping("/study-plans/daily-hours/AI")
+    fun makeCurriculumWithAI(@RequestBody request: CreateDailyHoursPlanRequest): String? {
+        return learningPlanService.makeCurriculumWithAI(request)
     }
 
 }
