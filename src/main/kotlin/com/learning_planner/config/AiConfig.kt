@@ -1,6 +1,6 @@
 package com.learning_planner.config
 
-import com.learning_planner.config.LearningPrompts.Companion.systemPrompt
+import com.learning_planner.util.LearningPrompts.Companion.systemPrompt
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

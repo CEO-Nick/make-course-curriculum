@@ -1,4 +1,4 @@
-package com.learning_planner.config
+package com.learning_planner.util
 
 import com.learning_planner.dto.curriculum.request.CreateDailyHoursPlanRequest
 import com.learning_planner.dto.curriculum.request.CreateDateRangePlanRequest
