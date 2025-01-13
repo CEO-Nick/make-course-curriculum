@@ -1,5 +1,5 @@
 package com.learning_planner.dto.curriculum.request
 
-data class CourseCreateRequest(
+data class CreateCourseRequest(
     val courseUrl: String
 )
