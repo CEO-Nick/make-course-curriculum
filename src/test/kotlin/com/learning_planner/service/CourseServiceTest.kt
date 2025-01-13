@@ -37,7 +37,7 @@ class CourseServiceTest @Autowired constructor(
         // then
         assertThat(allCourses).hasSize(1)
         assertThat(allCourses[0].title).isEqualTo("김영한의 실전 자바 - 기본편 강의")
-        assertThat(allCourses[0].instructor).isEqualTo("김영한")
+        assertThat(allCourses[0].instructors[0]).isEqualTo("김영한")
     }
 
     @Test

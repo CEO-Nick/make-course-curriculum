@@ -8,7 +8,9 @@ data class Course(
     @Id
     val id: String,  // 인프런 강의 ID
     val title: String,  // 강의명
-    val instructor: String,  // 강사명
+    val instructors: List<String>,  // 강사들명
+    val lectureUnitCount: Int,
+    val runtime: Int,
     val curriculum: CurriculumData  // 커리큘럼 데이터를 그대로 사용
 )
 

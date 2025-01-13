@@ -4,15 +4,19 @@ import com.learning_planner.domain.course.Course
 
 data class CourseResponse(
     val courseName: String,
-    val instructor: String,
+    val instructors: List<String>,
     val courseId: String,
+    val lectureUnitCount: Int,
+    val runtime: Int,
 ) {
     companion object {
         fun from(course: Course): CourseResponse {
             return CourseResponse(
                 courseName = course.title,
-                instructor = course.instructor,
-                courseId = course.id
+                instructors = course.instructors,
+                courseId = course.id,
+                lectureUnitCount = course.lectureUnitCount,
+                runtime = course.runtime,
             )
         }
     }

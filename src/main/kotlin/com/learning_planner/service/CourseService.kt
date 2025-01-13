@@ -4,6 +4,7 @@ import com.learning_planner.domain.course.Course
 import com.learning_planner.domain.course.CourseRepository
 import com.learning_planner.dto.course.request.CreateCourseRequest
 import com.learning_planner.dto.course.response.CourseInfo
+import com.learning_planner.dto.course.response.CourseInfoApiResponse
 import com.learning_planner.dto.curriculum.response.CurriculumResponse
 import groovy.util.logging.Slf4j
 import org.slf4j.LoggerFactory
@@ -26,8 +27,11 @@ class CourseService(
      * 입력한 강의 URL의 정보를 저장하기
      */
     fun addCourse(request: CreateCourseRequest): Course {
-        // 강의 정보 추출
-        val courseInfo = fetchCourseInfo(request.courseUrl)
+        // 강의 ID 추출
+        val courseId = extractCourseId(request.courseUrl)
+
+        // 강의 정보 추출(강의명, 강사들명, 강의 개수, 전체 런타임)
+        val courseInfo = fetchCourseInfo(courseId)
 
         // 강의 커리큘럼 추출
         val courseCurriculum = fetchCurriculum(courseInfo.courseId)
@@ -37,7 +41,9 @@ class CourseService(
             Course(
                 id = courseInfo.courseId,
                 title = courseInfo.courseName,
-                instructor = courseInfo.instructor,
+                instructors = courseInfo.instructors,
+                lectureUnitCount = courseInfo.lectureUnitCount,
+                runtime = courseInfo.runtime,
                 curriculum = courseCurriculum.data,
             )
         )
@@ -54,38 +60,36 @@ class CourseService(
         return courseRepository.findAll()
     }
 
+    private fun fetchCourseInfo(courseId: String): CourseInfo {
+        val courseInfoUrl = buildCourseInfoUrl(courseId)
+
+        try {
+            val courseInfoResponse =
+                restTemplate.getForObject(courseInfoUrl, CourseInfoApiResponse::class.java) ?.data
+                    ?: throw IllegalStateException("강의 정보 요청 반환값이 null 입니다")
+
+            return CourseInfo(
+                courseId = courseId,
+                courseName = courseInfoResponse.title,
+                instructors = courseInfoResponse.instructors.map { it.name },
+                lectureUnitCount = courseInfoResponse.unitSummary.lectureUnitCount,
+                runtime = courseInfoResponse.unitSummary.runtime,
+            )
+        } catch (e: RestClientException) {
+            throw IllegalStateException("강의 정보를 불러올 수 없습니다")
+        }
+
+    }
+
     /**
-     * 인프런 강의 URL로 강의 정보(강의ID, 강의명, 강사명) 추출
+     * 인프런 강의 URL로 강의 ID 추출
      */
-    private fun fetchCourseInfo(courseUrl: String): CourseInfo {
+    private fun extractCourseId(courseUrl: String): String {
         val courseHtml = fetchCourseHtml(courseUrl)
 
         // 강의 ID 추출
-        val courseId = ITEM_ID_PATTERN.find(courseHtml)?.groupValues?.get(1)
+        return ITEM_ID_PATTERN.find(courseHtml)?.groupValues?.get(1)
             ?: throw IllegalStateException("강의 ID를 알 수 없습니다")
-
-        // 강의명 & 강사명 추출
-        val title = TITLE_PATTERN.find(courseHtml)?.groupValues
-        val courseName = title?.get(1)?.trim() ?: throw IllegalStateException("강의명을 알 수 없습니다")
-        val instructor = title[2].trim()
-
-
-        // 강의 개수 & 강의 전체 시간 추출
-        // TODO : 에러 발생 해결하기
-        val courseMetadata = COURSE_METADATA_PATTERN.find(courseHtml)?.groupValues ?: throw IllegalStateException("강의 개수와 강의 전체 시간을 추출할 수 없습니다")
-        val numberOfLessons = courseMetadata[1].toInt()
-        val hours = courseMetadata[2].toInt()
-        val minutes = courseMetadata[3].toInt()
-
-        log.info("강의 개수 : $numberOfLessons\t$hours 시간 $minutes 분")
-
-        return CourseInfo(
-            courseId = courseId,
-            courseName = courseName,
-            instructor = instructor,
-            lessonCount = numberOfLessons,
-            totalDuration = hours * 60 + minutes
-        )
     }
 
     // 강의URL로 get요청
@@ -106,6 +110,7 @@ class CourseService(
         }
     }
 
+
     // 강의ID로 커리큘럼 요청
     private fun fetchCurriculum(courseId: String): CurriculumResponse {
         val curriculumUrl = buildCurriculumUrl(courseId)
@@ -118,8 +123,18 @@ class CourseService(
         }
     }
 
+    /**
+     * 커리큘럼 요청 URL 생성
+     */
     private fun buildCurriculumUrl(courseId: String): String {
-        return "$CURRICULUM_API_BASE_URL$courseId$CURRICULUM_API_SUFFIX"
+        return "$INFLEARN_API_BASE_URL$courseId$CURRICULUM_API_SUFFIX"
+    }
+
+    /**
+     * 강의 정보 요청 URL 생성
+     */
+    private fun buildCourseInfoUrl(courseId: String): String {
+        return "$INFLEARN_API_BASE_URL$courseId$COURSE_INFO_API_SUFFIX"
     }
 
     companion object {
@@ -127,21 +142,16 @@ class CourseService(
         private val ITEM_ID_PATTERN =
             """<meta property="dtr:item_id" content="(\d+)"\s*/>""".toRegex()
 
-        // 강의명 추출
-        private val TITLE_PATTERN = """<title>(.*?) \| (.*?) - 인프런</title>""".toRegex()
-
-        // 강의 개수 & 강의 전체 시간 추출
-        private val COURSE_METADATA_PATTERN = """(\d+)\s*∙\s*\((\d+)시간\s*(\d+)분\)""".toRegex()
-
-        // 커리큘럼 api 앞부분
-        private const val CURRICULUM_API_BASE_URL =
+        // inflearn api 앞부분
+        private const val INFLEARN_API_BASE_URL =
             "https://course-api.inflearn.com/client/api/v1/course/"
 
         // 커리큘럼 api 뒷부분
         private const val CURRICULUM_API_SUFFIX = "/curriculum?lang=ko"
 
+        // 강의 정보 api 뒷부분
+        private const val COURSE_INFO_API_SUFFIX = "/online/info?lang=ko"
+
         private val log = LoggerFactory.getLogger(CourseService::class.java)
-
-
     }
 }
