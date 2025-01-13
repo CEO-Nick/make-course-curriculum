@@ -2,12 +2,15 @@ package com.learning_planner.service
 
 import com.learning_planner.domain.course.Course
 import com.learning_planner.domain.course.CourseRepository
-import com.learning_planner.dto.curriculum.request.CourseCreateRequest
+import com.learning_planner.dto.curriculum.request.CreateCourseRequest
 import com.learning_planner.dto.curriculum.response.CourseInfo
 import com.learning_planner.dto.curriculum.response.CurriculumResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
+import java.net.MalformedURLException
+import java.net.URL
 
 @Service
 @Transactional
@@ -19,7 +22,7 @@ class CourseService(
     /**
      * 입력한 강의 URL의 정보를 저장하기
      */
-    fun addCourse(request: CourseCreateRequest): Course {
+    fun addCourse(request: CreateCourseRequest): Course {
         // 강의 정보 추출
         val courseInfo = fetchCourseInfo(request.courseUrl)
 
@@ -72,16 +75,32 @@ class CourseService(
 
     // 강의URL로 get요청
     private fun fetchCourseHtml(courseUrl: String): String {
-        val courseHtml = restTemplate.getForObject(courseUrl, String::class.java)
-            ?: throw IllegalStateException("해당 강의를 불러올 수 없습니다")
-        return courseHtml
+        try {
+            // URL 형식 검증
+            URL(courseUrl)
+        } catch (e: MalformedURLException) {
+            throw IllegalArgumentException("올바르지 않은 URL 형식입니다")
+        }
+
+        // HTTP 요청 및 응답 처리
+        return try {
+            restTemplate.getForObject(courseUrl, String::class.java)
+                ?: throw IllegalStateException("강의 요청 반환값이 null 입니다")
+        } catch (e: RestClientException) {
+            throw IllegalStateException("해당 강의를 찾을 수 없습니다")
+        }
     }
 
     // 강의ID로 커리큘럼 요청
     private fun fetchCurriculum(courseId: String): CurriculumResponse {
         val curriculumUrl = buildCurriculumUrl(courseId)
-        return restTemplate.getForObject(curriculumUrl, CurriculumResponse::class.java)
-            ?: throw IllegalStateException("강의 커리큘럼을 불러올 수 없습니다")
+
+        return try {
+            restTemplate.getForObject(curriculumUrl, CurriculumResponse::class.java)
+                ?: throw IllegalStateException("강의 커리큘럼 요청 반환값이 null 입니다")
+        } catch (e: RestClientException) {
+            throw IllegalStateException("강의 커리큘럼을 불러올 수 없습니다")
+        }
     }
 
     private fun buildCurriculumUrl(courseId: String): String {
