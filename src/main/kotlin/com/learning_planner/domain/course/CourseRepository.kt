@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface CourseRepository : MongoRepository<Course, String> {
+
+    fun findAllByTitleContainingIgnoreCase(term: String): List<Course>
 }
