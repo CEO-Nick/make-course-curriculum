@@ -1,6 +1,6 @@
 package com.learning_planner.controller
 
-import com.learning_planner.dto.curriculum.request.CourseCreateRequest
+import com.learning_planner.dto.curriculum.request.CreateCourseRequest
 import com.learning_planner.dto.curriculum.response.CourseResponse
 import com.learning_planner.service.CourseService
 import org.springframework.web.bind.annotation.*
@@ -11,7 +11,7 @@ class CourseController(
 ) {
 
     @PostMapping("/course")
-    fun addCourse(@RequestBody request: CourseCreateRequest): CourseResponse {
+    fun addCourse(@RequestBody request: CreateCourseRequest): CourseResponse {
         return CourseResponse.from(courseService.addCourse(request))
     }
 
