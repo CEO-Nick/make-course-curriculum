@@ -9,10 +9,8 @@ import com.learning_planner.util.findByIdOrThrow
 import groovy.util.logging.Slf4j
 import org.slf4j.LoggerFactory
 import org.springframework.ai.chat.client.ChatClient
-import org.springframework.data.mongodb.core.aggregation.DateOperators.Minute
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.DayOfWeek
 
 @Service
 @Transactional

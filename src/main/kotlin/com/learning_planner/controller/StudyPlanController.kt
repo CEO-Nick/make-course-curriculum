@@ -3,7 +3,6 @@ package com.learning_planner.controller
 import com.learning_planner.dto.curriculum.request.CreateDailyHoursPlanRequest
 import com.learning_planner.dto.curriculum.request.CreateDateRangePlanRequest
 import com.learning_planner.service.LearningPlanService
-import com.learning_planner.service.Lecture
 import com.learning_planner.service.WeeklyStudyPlan
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
