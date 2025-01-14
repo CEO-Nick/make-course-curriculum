@@ -60,7 +60,6 @@ class LearningPrompts {
             
             [학습 설정]
             선호 재생 속도: ${request.preferredPlaybackSpeed}배속
-            주말 학습: ${translateWeekendPlan(request.weekendStudyPlan)}
             
             [커리큘럼 정보]
             $curriculum

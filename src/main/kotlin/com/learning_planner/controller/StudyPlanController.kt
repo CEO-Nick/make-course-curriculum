@@ -3,6 +3,7 @@ package com.learning_planner.controller
 import com.learning_planner.dto.curriculum.request.CreateDailyHoursPlanRequest
 import com.learning_planner.dto.curriculum.request.CreateDateRangePlanRequest
 import com.learning_planner.service.LearningPlanService
+import com.learning_planner.service.LectureSchedule
 import com.learning_planner.service.WeeklyStudyPlan
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -14,7 +15,7 @@ class StudyPlanController(
 ) {
 
     @PostMapping("/study-plans/date-range")
-    fun makeCurriculum(@RequestBody request: CreateDateRangePlanRequest): String? {
+    fun makeCurriculum(@RequestBody request: CreateDateRangePlanRequest): List<LectureSchedule> {
         return learningPlanService.makeCurriculum(request)
     }
 
