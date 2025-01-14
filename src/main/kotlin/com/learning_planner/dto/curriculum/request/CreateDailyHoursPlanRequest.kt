@@ -5,11 +5,11 @@ data class CreateDailyHoursPlanRequest (
     val dailyStudyMinutes: Int,
     val studyFrequency: StudyFrequency,
     val preferredPlaybackSpeed: Float,
-    val holidayInclusion: HolidayInclusionType,
 )
 
 enum class StudyFrequency {
-    DAILY,              // Every day
-    THREE_TIMES_WEEK,   // Three times per week
-    TWO_TIMES_WEEK      // Two times per week
+    DAILY,              // 매일
+    FIVE_TIMES_WEEK,    // 주 5회
+    THREE_TIMES_WEEK,   // 주 3회
+    TWO_TIMES_WEEK      // 주 2회
 }

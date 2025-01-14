@@ -99,6 +99,7 @@ class LearningPrompts {
 
         private fun translateStudyFrequency(frequency: StudyFrequency): String = when (frequency) {
             StudyFrequency.DAILY -> "매일"
+            StudyFrequency.FIVE_TIMES_WEEK -> "주 5회"
             StudyFrequency.THREE_TIMES_WEEK -> "주 3회"
             StudyFrequency.TWO_TIMES_WEEK -> "주 2회"
         }
