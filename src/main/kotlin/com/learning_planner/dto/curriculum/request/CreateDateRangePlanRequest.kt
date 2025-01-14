@@ -5,7 +5,8 @@ data class CreateDateRangePlanRequest (
     val startDate: String, // "2025-01-13" 형식
     val endDate: String,
     val preferredPlaybackSpeed: Float,
-    val weekendStudyPlan: WeekendStudyPlan
+    val weekendStudyPlan: WeekendStudyPlan,
+    val holidayInclusion: HolidayInclusionType,
 )
 
 enum class WeekendStudyPlan {

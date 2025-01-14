@@ -5,20 +5,23 @@ import com.learning_planner.dto.curriculum.request.CreateDailyHoursPlanRequest
 import com.learning_planner.dto.curriculum.request.CreateDateRangePlanRequest
 import com.learning_planner.util.LearningPrompts
 import com.learning_planner.util.findByIdOrThrow
+import groovy.util.logging.Slf4j
+import org.slf4j.LoggerFactory
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
+@Slf4j
 class LearningPlanService(
     private val courseRepository: CourseRepository,
     private val chatClient: ChatClient
 ) {
 
-    // <p class="mantine-Text-root mantine-1hqlk6r">
     fun makeCurriculum(request: CreateDateRangePlanRequest) {
         val findCourse = courseRepository.findByIdOrThrow(request.courseId)
+
 
     }
 
@@ -44,6 +47,11 @@ class LearningPlanService(
             .call()
             .chatResponse()
             ?.result?.output?.content
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(CourseService::class.java)
+
     }
 
 }
