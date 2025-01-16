@@ -3,7 +3,6 @@ package com.learning_planner.util
 import com.learning_planner.dto.curriculum.request.CreateDailyHoursPlanRequest
 import com.learning_planner.dto.curriculum.request.CreateDateRangePlanRequest
 import com.learning_planner.dto.curriculum.request.StudyFrequency
-import com.learning_planner.dto.curriculum.request.WeekendStudyPlan
 import java.time.LocalDate
 
 class LearningPrompts {
@@ -90,11 +89,11 @@ class LearningPrompts {
             예상 수강 완료 기간도 함께 계산해주세요.
         """.trimIndent()
 
-        private fun translateWeekendPlan(plan: WeekendStudyPlan): String = when (plan) {
-            WeekendStudyPlan.INCLUDE_WEEKENDS -> "주말 포함"
-            WeekendStudyPlan.EXCLUDE_WEEKENDS -> "주말 제외"
-            WeekendStudyPlan.WEEKEND_ONLY_ONE_DAY -> "주말 하루만"
-        }
+//        private fun translateWeekendPlan(plan: WeekendStudyPlan): String = when (plan) {
+//            WeekendStudyPlan.INCLUDE_WEEKENDS -> "주말 포함"
+//            WeekendStudyPlan.EXCLUDE_WEEKENDS -> "주말 제외"
+//            WeekendStudyPlan.WEEKEND_ONLY_ONE_DAY -> "주말 하루만"
+//        }
 
         private fun translateStudyFrequency(frequency: StudyFrequency): String = when (frequency) {
             StudyFrequency.DAILY -> "매일"

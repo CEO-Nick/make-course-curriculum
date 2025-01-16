@@ -265,7 +265,27 @@ class LearningPlanService(
         return weeklyDates.flatMap { (_, datesInWeek) ->
             // 각 주의 가용 날짜 중 필요한 만큼만 선택
             // 만약 해당 주의 가용 날짜가 목표보다 적다면 가용한 만큼만 선택됨
-            datesInWeek.take(targetDaysPerWeek)
+            if (datesInWeek.size <= targetDaysPerWeek) {
+                datesInWeek.take(targetDaysPerWeek)
+            } else {
+                when (targetDaysPerWeek) {
+                    2 -> {
+                        when (datesInWeek.size) {
+                            7, 6 -> listOf(datesInWeek[1], datesInWeek[4])
+                            5, 4 -> listOf(datesInWeek[1], datesInWeek[3])
+                            else -> datesInWeek.take(targetDaysPerWeek)
+                        }
+                    }
+                    3 -> {
+                        when (datesInWeek.size) {
+                            7, 6 -> listOf(datesInWeek[1], datesInWeek[3], datesInWeek[5])
+                            5 -> listOf(datesInWeek[0], datesInWeek[2], datesInWeek[4])
+                            else -> datesInWeek.take(targetDaysPerWeek)
+                        }
+                    }
+                    else -> datesInWeek.take(targetDaysPerWeek)
+                }
+            }
         }.sorted()
     }
 

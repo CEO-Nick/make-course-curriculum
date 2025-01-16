@@ -9,12 +9,6 @@ data class CreateDateRangePlanRequest (
     val holidayInclusion: HolidayInclusionType,
 )
 
-enum class WeekendStudyPlan {
-    INCLUDE_WEEKENDS,       // 주말 포함
-    EXCLUDE_WEEKENDS,       // 주말 제외
-    WEEKEND_ONLY_ONE_DAY,   // 주말 하루만 포함
-}
-
 enum class HolidayInclusionType {
     INCLUDE_HOLIDAYS,
     EXCLUDE_HOLIDAYS,
