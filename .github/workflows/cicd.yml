@@ -3,7 +3,7 @@ name: CI/CD
 # 워크플로가 시작될 조건 지정
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
