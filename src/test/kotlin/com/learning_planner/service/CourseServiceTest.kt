@@ -13,10 +13,13 @@ import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
 @AutoConfigureDataMongo
-class CourseServiceTest @Autowired constructor(
-    private val courseService: CourseService,
-    private val courseRepository: CourseRepository,
-) {
+class CourseServiceTest {
+
+    @Autowired
+    private lateinit var courseService: CourseService
+
+    @Autowired
+    private lateinit var courseRepository: CourseRepository
 
     @AfterEach
     fun cleanup() {

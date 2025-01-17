@@ -30,7 +30,6 @@ class StudyPlanController(
         return response
     }
 
-
     @PostMapping("/study-plans/date-range/AI")
     fun makeCurriculumWithAI(@RequestBody request: CreateDateRangePlanRequest): String? {
         return learningPlanService.makeCurriculumWithAI(request)
