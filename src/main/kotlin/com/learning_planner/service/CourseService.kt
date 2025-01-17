@@ -56,8 +56,8 @@ class CourseService(
         return courseRepository.findAllByTitleContainingIgnoreCase(term)
     }
 
-    fun findAll(): MutableList<Course> {
-        return courseRepository.findAll()
+    fun getLatestCourses(): MutableList<Course> {
+        return courseRepository.findAll().reversed().toMutableList()
     }
 
     private fun fetchCourseInfo(courseId: String): CourseInfo {

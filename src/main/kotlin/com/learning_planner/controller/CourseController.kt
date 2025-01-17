@@ -23,6 +23,6 @@ class CourseController(
 
     @GetMapping("/course/all")
     fun getAllCourses(): List<CourseResponse> {
-        return courseService.findAll().map { CourseResponse.from(it) }
+        return courseService.getLatestCourses().map { CourseResponse.from(it) }
     }
 }
