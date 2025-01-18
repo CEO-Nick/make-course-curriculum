@@ -70,4 +70,20 @@ jobs:
           sshpass -p "$NCP_PASSWORD" scp -o StrictHostKeyChecking=no build/libs/learning_planner-0.0.1-SNAPSHOT.jar ${NCP_USER}@${NCP_HOST}:/root/make-curriculum
           
           # 인스턴스에서 JAR 파일 실행
-          sshpass -p "$NCP_PASSWORD" ssh -o StrictHostKeyChecking=no ${NCP_USER}@${NCP_HOST} "pgrep java | xargs kill -9; nohup java -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Seoul -jar /root/make-curriculum/learning_planner-0.0.1-SNAPSHOT.jar >> /root/log/app.log &"
+          sshpass -p "$NCP_PASSWORD" ssh -o StrictHostKeyChecking=no ${NCP_USER}@${NCP_HOST} "
+          if pgrep java; then
+          pgrep java | xargs kill -9
+          sleep 1  # 프로세스 종료 대기
+          fi
+          
+          nohup java -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Seoul -jar /root/make-curriculum/learning_planner-0.0.1-SNAPSHOT.jar >> /root/log/app.log 2>&1 &
+          
+          sleep 5  # 프로세스 시작 확인 대기
+          if pgrep java > /dev/null; then
+          echo 'Application started successfully'
+          exit 0
+          else
+          echo 'Failed to start application'
+          exit 1
+          fi
+          "
