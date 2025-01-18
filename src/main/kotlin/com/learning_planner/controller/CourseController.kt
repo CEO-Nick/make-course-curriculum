@@ -5,7 +5,8 @@ import com.learning_planner.dto.course.response.CourseResponse
 import com.learning_planner.service.CourseService
 import org.springframework.web.bind.annotation.*
 
-@RestController("/api/proxy")
+@RestController
+@RequestMapping("/api/proxy")
 class CourseController(
     private val courseService: CourseService
 ) {
