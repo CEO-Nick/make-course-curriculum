@@ -2,12 +2,14 @@ package com.learning_planner.service
 
 import com.learning_planner.domain.course.Course
 import com.learning_planner.domain.course.CourseRepository
+import com.learning_planner.domain.course.CourseSearchDto
 import com.learning_planner.dto.course.request.CreateCourseRequest
 import com.learning_planner.dto.course.response.CourseInfo
 import com.learning_planner.dto.course.response.CourseInfoApiResponse
 import com.learning_planner.dto.curriculum.response.CurriculumResponse
 import groovy.util.logging.Slf4j
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestClientException
@@ -53,7 +55,14 @@ class CourseService(
      * 강의 검색
      */
     fun searchCourse(term: String): List<Course> {
-        return courseRepository.findAllByTitleContainingIgnoreCase(term)
+        val searchQuery = term.split(" ")
+            .filter { it.isNotBlank() }
+            .joinToString(" ")  // 공백으로 구분된 검색어
+
+        val searchCourses =
+            courseRepository.searchCourses(searchQuery, Sort.by(Sort.Order.desc("score")))
+        log.info("search result : $searchCourses")
+        return searchCourses
     }
 
     fun getLatestCourses(): MutableList<Course> {

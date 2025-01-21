@@ -129,7 +129,7 @@ class LearningPlanService(
         findCourse: Course,
         playBack: Float
     ): List<Lecture> {
-        val courseList = findCourse.curriculum.curriculum.flatMap { section ->  // 커리큘럼 가져와서 배속 적용하기
+        val courseList = findCourse.curriculum!!.curriculum.flatMap { section ->  // 커리큘럼 가져와서 배속 적용하기
             section.units.map { unit ->
                 val adjustedTime = (unit.runtime / playBack * 10).toInt() / 10.0    // 배속 적용된 강의 시간
                 Lecture(unit.title, adjustedTime)
