@@ -6,7 +6,6 @@ import com.learning_planner.dto.curriculum.request.CreateDailyHoursPlanRequest
 import com.learning_planner.dto.curriculum.request.CreateDateRangePlanRequest
 import com.learning_planner.dto.curriculum.request.HolidayInclusionType
 import com.learning_planner.dto.curriculum.request.StudyFrequency
-import com.learning_planner.util.LearningPrompts
 import com.learning_planner.util.findByIdOrThrow
 import groovy.util.logging.Slf4j
 import org.slf4j.LoggerFactory
@@ -129,10 +128,11 @@ class LearningPlanService(
         findCourse: Course,
         playBack: Float
     ): List<Lecture> {
-        val courseList = findCourse.curriculum!!.curriculum.flatMap { section ->  // 커리큘럼 가져와서 배속 적용하기
-            section.units.map { unit ->
+        val courseList = findCourse.curriculum!!.curriculum.flatMapIndexed { sectionIdx, section ->  // 커리큘럼 가져와서 배속 적용하기
+            section.units.mapIndexed { unitIdx, unit ->
                 val adjustedTime = (unit.runtime / playBack * 10).toInt() / 10.0    // 배속 적용된 강의 시간
-                Lecture(unit.title, adjustedTime)
+                val title = "[섹션 ${sectionIdx + 1}] ${unitIdx + 1}. ${unit.title}"
+                Lecture(title, adjustedTime)
             }
         }.filter { it.runtime > 0.0 }    // 강의 시간 0.0 제외
         return courseList
@@ -289,34 +289,34 @@ class LearningPlanService(
         }.sorted()
     }
 
-    fun makeCurriculumWithAI(request: CreateDateRangePlanRequest): String? {
-        val findCourse = courseRepository.findByIdOrThrow(request.courseId)
-
-        return chatClient.prompt()
-            .user(
-                LearningPrompts.createDateRangePlanPrompt(
-                    request,
-                    findCourse.curriculum.toString()
-                )
-            )
-            .call()
-            .chatResponse()
-            ?.result?.output?.content
-    }
-
-    fun makeCurriculumWithAI(request: CreateDailyHoursPlanRequest): String? {
-        val findCourse = courseRepository.findByIdOrThrow(request.courseId)
-        return chatClient.prompt()
-            .user(
-                LearningPrompts.createDailyHoursPlanPrompt(
-                    request,
-                    findCourse.curriculum.toString()
-                )
-            )
-            .call()
-            .chatResponse()
-            ?.result?.output?.content
-    }
+//    fun makeCurriculumWithAI(request: CreateDateRangePlanRequest): String? {
+//        val findCourse = courseRepository.findByIdOrThrow(request.courseId)
+//
+//        return chatClient.prompt()
+//            .user(
+//                LearningPrompts.createDateRangePlanPrompt(
+//                    request,
+//                    findCourse.curriculum.toString()
+//                )
+//            )
+//            .call()
+//            .chatResponse()
+//            ?.result?.output?.content
+//    }
+//
+//    fun makeCurriculumWithAI(request: CreateDailyHoursPlanRequest): String? {
+//        val findCourse = courseRepository.findByIdOrThrow(request.courseId)
+//        return chatClient.prompt()
+//            .user(
+//                LearningPrompts.createDailyHoursPlanPrompt(
+//                    request,
+//                    findCourse.curriculum.toString()
+//                )
+//            )
+//            .call()
+//            .chatResponse()
+//            ?.result?.output?.content
+//    }
 
     companion object {
 
