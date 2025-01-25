@@ -5,4 +5,5 @@ data class CreateDailyHoursPlanRequest (
     val dailyStudyMinutes: Int,
     val studyFrequency: StudyFrequency,
     val preferredPlaybackSpeed: Float,
-)
+    var startUnitId: Long,
+    )

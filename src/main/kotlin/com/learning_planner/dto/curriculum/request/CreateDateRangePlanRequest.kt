@@ -7,6 +7,7 @@ data class CreateDateRangePlanRequest (
     val preferredPlaybackSpeed: Float,
     val studyFrequency: StudyFrequency,
     val holidayInclusion: HolidayInclusionType,
+    var startUnitId: Long,
 )
 
 enum class HolidayInclusionType {
