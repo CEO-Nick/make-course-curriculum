@@ -28,7 +28,11 @@ class LearningPlanService(
     fun makeCurriculum(request: CreateDateRangePlanRequest): List<LectureSchedule> {
         val findCourse = courseRepository.findByIdOrThrow(request.courseId)
 
-        val courseList = calculateAdjustedLectures(findCourse, request.preferredPlaybackSpeed)
+        val courseList = calculateAdjustedLectures(
+            findCourse = findCourse,
+            playBack = request.preferredPlaybackSpeed,
+            startUnitId = request.startUnitId
+        )
 
         val generateStudyDates = generateStudyDates(request)
 
@@ -44,7 +48,11 @@ class LearningPlanService(
     fun makeCurriculum(request: CreateDailyHoursPlanRequest): List<WeeklyStudyPlan> {
         val findCourse = courseRepository.findByIdOrThrow(request.courseId) // DB에서 강의 정보 가져오기
 
-        val courseList = calculateAdjustedLectures(findCourse, request.preferredPlaybackSpeed)
+        val courseList = calculateAdjustedLectures(
+            findCourse = findCourse,
+            playBack = request.preferredPlaybackSpeed,
+            startUnitId = request.startUnitId
+        )
 
         // 하루 공부할 양으로 나누기
         val dailyStudySeconds = request.dailyStudyMinutes * 60
@@ -59,7 +67,10 @@ class LearningPlanService(
     }
 
 
-    fun distributeLectures(lectures: List<Lecture>, availableDates: List<LocalDate>): List<LectureSchedule> {
+    fun distributeLectures(
+        lectures: List<Lecture>,
+        availableDates: List<LocalDate>
+    ): List<LectureSchedule> {
         // 1. 총 강의 시간 계산
         val totalRuntime = lectures.sumOf { it.runtime }
         val targetDailyRuntime = (totalRuntime / availableDates.size) * 1.25 // 20% 여유 추가
@@ -122,19 +133,39 @@ class LearningPlanService(
     }
 
     /**
-     * 강의 DB 데이터에서 커리큘럼 추출 후, 배속 적용
+     * 강의 DB 데이터에서 커리큘럼 추출 후, 배속 적용 & 시작/중간부터 강의 선택
      */
     private fun calculateAdjustedLectures(
         findCourse: Course,
-        playBack: Float
+        playBack: Float,
+        startUnitId: Long,
     ): List<Lecture> {
-        val courseList = findCourse.curriculum!!.curriculum.flatMapIndexed { sectionIdx, section ->  // 커리큘럼 가져와서 배속 적용하기
-            section.units.mapIndexed { unitIdx, unit ->
-                val adjustedTime = (unit.runtime / playBack * 10).toInt() / 10.0    // 배속 적용된 강의 시간
-                val title = "[섹션 ${sectionIdx + 1}] ${unitIdx + 1}. ${unit.title}"
-                Lecture(title, adjustedTime)
-            }
-        }.filter { it.runtime > 0.0 }    // 강의 시간 0.0 제외
+        var drop = false
+        val courseList =
+            findCourse.curriculum!!.curriculum.flatMapIndexed { sectionIdx, section ->
+                val originalSize = section.units.size
+
+                val units = if (startUnitId == 0L || drop) {
+                    section.units
+                } else {
+                    val remainingUnits = section.units.dropWhile { unit -> unit.id != startUnitId }
+                    drop =
+                        remainingUnits.isNotEmpty()  // 아직 startUnitId 찾지 못한 경우 -> false / 찾은 경우 -> true
+                    remainingUnits
+                }
+
+                val dropCount =
+                    originalSize - units.size   // drop한 강의 수 << unit index 설정할 때, drop한 강의 수만큼 더해줘야 함
+
+                units
+                    .mapIndexed { unitIdx, unit ->
+                        val adjustedTime =
+                            (unit.runtime / playBack * 10).toInt() / 10.0    // 배속 적용된 강의 시간
+                        val title =
+                            "[섹션 ${sectionIdx + 1}] ${unitIdx + dropCount + 1}. ${unit.title}"
+                        Lecture(title, adjustedTime)
+                    }
+            }.filter { it.runtime > 0.0 }    // 강의 시간 0.0 제외
         return courseList
     }
 
@@ -276,6 +307,7 @@ class LearningPlanService(
                             else -> datesInWeek.take(targetDaysPerWeek)
                         }
                     }
+
                     3 -> {
                         when (datesInWeek.size) {
                             7, 6 -> listOf(datesInWeek[1], datesInWeek[3], datesInWeek[5])
@@ -283,6 +315,7 @@ class LearningPlanService(
                             else -> datesInWeek.take(targetDaysPerWeek)
                         }
                     }
+
                     else -> datesInWeek.take(targetDaysPerWeek)
                 }
             }
