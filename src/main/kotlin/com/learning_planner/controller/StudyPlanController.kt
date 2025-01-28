@@ -1,19 +1,23 @@
 package com.learning_planner.controller
 
+import com.learning_planner.domain.course.Section
 import com.learning_planner.dto.curriculum.request.CreateDailyHoursPlanRequest
 import com.learning_planner.dto.curriculum.request.CreateDateRangePlanRequest
 import com.learning_planner.dto.curriculum.response.DailyHoursStudyPlanResponse
+import com.learning_planner.service.CourseService
 import com.learning_planner.service.LearningPlanService
 import com.learning_planner.service.LectureSchedule
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class StudyPlanController(
-    private val learningPlanService: LearningPlanService
+    private val learningPlanService: LearningPlanService,
+    private val courseService: CourseService,
 ) {
-
     @PostMapping("/study-plans/date-range")
     fun makeCurriculum(@RequestBody request: CreateDateRangePlanRequest): List<LectureSchedule> {
         return learningPlanService.makeCurriculum(request)
@@ -28,6 +32,11 @@ class StudyPlanController(
             totalDays = newCurriculum.last().dayPlans.last().dayNumber,
         )
         return response
+    }
+
+    @GetMapping("/curriculum")
+    fun getCurriculum(@RequestParam courseId: String ): List<Section> {
+        return courseService.getCurriculum(courseId)
     }
 
 //    @PostMapping("/study-plans/date-range/AI")

@@ -2,10 +2,12 @@ package com.learning_planner.service
 
 import com.learning_planner.domain.course.Course
 import com.learning_planner.domain.course.CourseRepository
+import com.learning_planner.domain.course.Section
 import com.learning_planner.dto.course.request.CreateCourseRequest
 import com.learning_planner.dto.course.response.CourseInfo
 import com.learning_planner.dto.course.response.CourseInfoApiResponse
 import com.learning_planner.dto.curriculum.response.CurriculumResponse
+import com.learning_planner.util.findByIdOrThrow
 import groovy.util.logging.Slf4j
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Sort
@@ -23,6 +25,16 @@ class CourseService(
     private val courseRepository: CourseRepository
 ) {
     private val restTemplate = RestTemplate()
+
+    /**
+     * 커리큘럼 조회
+     */
+    fun getCurriculum(courseId: String): List<Section> {
+        val course = courseRepository.findByIdOrThrow(courseId)
+
+        return course.curriculum!!.curriculum
+    }
+
 
     /**
      * 입력한 강의 URL의 정보를 저장하기
@@ -144,6 +156,7 @@ class CourseService(
     private fun buildCourseInfoUrl(courseId: String): String {
         return "$INFLEARN_API_BASE_URL$courseId$COURSE_INFO_API_SUFFIX"
     }
+
 
     companion object {
         // 강의 ID 추출을 위한 정규식 패턴
